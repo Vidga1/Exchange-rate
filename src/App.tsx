@@ -23,27 +23,26 @@ function App() {
       const cbrResponse = await fetch('https://www.cbr-xml-daily.ru/daily_json.js')
       const cbrData = await cbrResponse.json()
 
-      // Получаем курсы НБКР (USD/KGS) - используем CORS-прокси для продакшена
-      let usdKgsRate = 89.5
+      let usdKgsRate = 0
 
-      try {
-        // Пробуем получить через локальный прокси (разработка)
-        const nbkrResponse = await fetch('/api/nbkr')
-        const nbkrText = await nbkrResponse.text()
+      if (import.meta.env.DEV) {
+        try {
+          const nbkrResponse = await fetch('/api/nbkr')
+          const nbkrText = await nbkrResponse.text()
 
-        // Парсим XML НБКР для получения курса USD/KGS
-        const parser = new DOMParser()
-        const nbkrXml = parser.parseFromString(nbkrText, 'text/xml')
-        const usdElement = nbkrXml.querySelector('Currency[ISOCode="USD"]')
-        usdKgsRate = usdElement ? parseFloat(usdElement.querySelector('Value')?.textContent || '0') : 89.5
-      } catch (err) {
-        // Если прокси недоступен (продакшен), используем fallback
-        console.log('Используем fallback курс KGS')
+          const parser = new DOMParser()
+          const nbkrXml = parser.parseFromString(nbkrText, 'text/xml')
+          const usdElement = nbkrXml.querySelector('Currency[ISOCode="USD"]')
+          usdKgsRate = usdElement ? parseFloat(usdElement.querySelector('Value')?.textContent || '0') : 0
+        } catch (err) {
+          console.log('Курс KGS установлен в 0 (ошибка API)')
+        }
+      } else {
+        console.log('Курс KGS установлен в 0 (продакшен)')
       }
 
       const usdRubRate = cbrData.Valute?.USD?.Value || 0
 
-      // Если не удалось получить курсы, устанавливаем 0
       if (usdRubRate === 0 || usdKgsRate === 0) {
         setRates({
           USD: 1,
