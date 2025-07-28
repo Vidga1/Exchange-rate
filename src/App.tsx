@@ -26,10 +26,10 @@ function App() {
       let usdKgsRate = 0
 
       try {
-        // Используем надежный CORS прокси
-        const nbkrUrl = 'https://api.allorigins.win/raw?url=https://www.nbkr.kg/XML/daily.xml'
+        // Используем наш собственный API прокси
+        const nbkrUrl = '/api/nbkr'
 
-        console.log('Пытаемся получить курс KGS через прокси:', nbkrUrl)
+        console.log('Пытаемся получить курс KGS через наш API:', nbkrUrl)
         const nbkrResponse = await fetch(nbkrUrl)
         const nbkrText = await nbkrResponse.text()
 
