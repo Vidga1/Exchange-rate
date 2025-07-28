@@ -37,7 +37,7 @@ function App() {
         const usdElement = nbkrXml.querySelector('Currency[ISOCode="USD"]')
         usdKgsRate = usdElement ? parseFloat(usdElement.querySelector('Value')?.textContent || '0') : 0
       } catch (err) {
-        console.log('Курс KGS установлен в 0 (ошибка API)')
+        console.log('KGS установлен в 0 (ошибка API)')
       }
 
       const usdRubRate = cbrData.Valute?.USD?.Value || 0
