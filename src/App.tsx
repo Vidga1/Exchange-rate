@@ -25,20 +25,19 @@ function App() {
 
       let usdKgsRate = 0
 
-      if (import.meta.env.DEV) {
-        try {
-          const nbkrResponse = await fetch('/api/nbkr')
-          const nbkrText = await nbkrResponse.text()
+      try {
+        // В продакшене используем прямой URL к API киргизского банка
+        const nbkrUrl = import.meta.env.DEV ? '/api/nbkr' : 'https://www.nbkr.kg/XML/daily.xml'
 
-          const parser = new DOMParser()
-          const nbkrXml = parser.parseFromString(nbkrText, 'text/xml')
-          const usdElement = nbkrXml.querySelector('Currency[ISOCode="USD"]')
-          usdKgsRate = usdElement ? parseFloat(usdElement.querySelector('Value')?.textContent || '0') : 0
-        } catch (err) {
-          console.log('Курс KGS установлен в 0 (ошибка API)')
-        }
-      } else {
-        console.log('Курс KGS установлен в 0 (продакшен)')
+        const nbkrResponse = await fetch(nbkrUrl)
+        const nbkrText = await nbkrResponse.text()
+
+        const parser = new DOMParser()
+        const nbkrXml = parser.parseFromString(nbkrText, 'text/xml')
+        const usdElement = nbkrXml.querySelector('Currency[ISOCode="USD"]')
+        usdKgsRate = usdElement ? parseFloat(usdElement.querySelector('Value')?.textContent || '0') : 0
+      } catch (err) {
+        console.log('Курс KGS установлен в 0 (ошибка API)')
       }
 
       const usdRubRate = cbrData.Valute?.USD?.Value || 0
