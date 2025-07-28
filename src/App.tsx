@@ -27,10 +27,9 @@ function App() {
 
       try {
         // В продакшене используем CORS прокси для обхода ограничений
-        const nbkrUrl = import.meta.env.DEV
-          ? '/api/nbkr'
-          : 'https://api.allorigins.win/raw?url=https://www.nbkr.kg/XML/daily.xml'
+        const nbkrUrl = import.meta.env.DEV ? '/api/nbkr' : 'https://corsproxy.io/?https://www.nbkr.kg/XML/daily.xml'
 
+        console.log('Пытаемся получить курс KGS через URL:', nbkrUrl)
         const nbkrResponse = await fetch(nbkrUrl)
         const nbkrText = await nbkrResponse.text()
 
@@ -44,7 +43,8 @@ function App() {
         // Fallback: попробуем альтернативный прокси
         if (!import.meta.env.DEV) {
           try {
-            const fallbackUrl = 'https://cors-anywhere.herokuapp.com/https://www.nbkr.kg/XML/daily.xml'
+            const fallbackUrl = 'https://api.allorigins.win/raw?url=https://www.nbkr.kg/XML/daily.xml'
+            console.log('Пробуем fallback прокси:', fallbackUrl)
             const fallbackResponse = await fetch(fallbackUrl)
             const fallbackText = await fallbackResponse.text()
 
@@ -57,7 +57,8 @@ function App() {
 
             // Третий fallback: попробуем другой CORS прокси
             try {
-              const thirdFallbackUrl = 'https://thingproxy.freeboard.io/fetch/https://www.nbkr.kg/XML/daily.xml'
+              const thirdFallbackUrl = 'https://cors-anywhere.herokuapp.com/https://www.nbkr.kg/XML/daily.xml'
+              console.log('Пробуем третий fallback прокси:', thirdFallbackUrl)
               const thirdFallbackResponse = await fetch(thirdFallbackUrl)
               const thirdFallbackText = await thirdFallbackResponse.text()
 
@@ -66,9 +67,20 @@ function App() {
               const usdElement = nbkrXml.querySelector('Currency[ISOCode="USD"]')
               usdKgsRate = usdElement ? parseFloat(usdElement.querySelector('Value')?.textContent || '0') : 0
             } catch (thirdFallbackErr) {
-              console.log('Все прокси не сработали, используем статический курс')
-              // Используем примерный статический курс KGS (можно обновлять вручную)
-              usdKgsRate = 89.5 // Примерный курс USD/KGS
+              console.log('Все прокси не сработали, пробуем альтернативный источник')
+
+              // Попробуем получить курс KGS через другой API
+              try {
+                const alternativeUrl = 'https://api.exchangerate-api.com/v4/latest/USD'
+                console.log('Пробуем альтернативный API:', alternativeUrl)
+                const alternativeResponse = await fetch(alternativeUrl)
+                const alternativeData = await alternativeResponse.json()
+                usdKgsRate = alternativeData.rates?.KGS || 0
+                console.log('Получен курс KGS из альтернативного API:', usdKgsRate)
+              } catch (alternativeErr) {
+                console.log('Альтернативный API не сработал')
+                // Не устанавливаем статический курс, оставляем 0
+              }
             }
           }
         }
