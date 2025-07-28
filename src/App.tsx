@@ -36,7 +36,8 @@ function App() {
         const parser = new DOMParser()
         const nbkrXml = parser.parseFromString(nbkrText, 'text/xml')
         const usdElement = nbkrXml.querySelector('Currency[ISOCode="USD"]')
-        usdKgsRate = usdElement ? parseFloat(usdElement.querySelector('Value')?.textContent || '0') : 0
+        const usdValue = usdElement?.querySelector('Value')?.textContent || '0'
+        usdKgsRate = parseFloat(usdValue.replace(',', '.'))
       } catch (err) {
         console.log('KGS установлен в 0 (ошибка API)')
       }
