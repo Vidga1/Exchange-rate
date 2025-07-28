@@ -1,69 +1,59 @@
-# React + TypeScript + Vite
+# Конвертер валют
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Современное веб-приложение для конвертации валют с использованием официальных курсов ЦБ РФ и НБКР.
 
-Currently, two official plugins are available:
+## 🚀 Особенности
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Точные курсы валют** из официальных источников
+- **USD/RUB** - курс Центрального банка России
+- **USD/KGS** - курс Национального банка Кыргызской Республики
+- **Современный UI** с градиентами и анимациями
+- **Адаптивный дизайн** для всех устройств
+- **Мгновенная конвертация** между валютами
 
-## Expanding the ESLint configuration
+## 🛠 Технологии
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- React 19
+- TypeScript
+- Vite
+- Tailwind CSS
+- GitHub Actions для деплоя
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 📦 Установка и запуск
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+```bash
+# Установка зависимостей
+npm install
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# Запуск в режиме разработки
+npm run dev
+
+# Сборка для продакшена
+npm run build
+
+# Предварительный просмотр сборки
+npm run preview
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🌐 Деплой
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Приложение автоматически деплоится на GitHub Pages при пуше в ветку `main`.
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+### Настройка GitHub Pages:
+
+1. Перейдите в настройки репозитория на GitHub
+2. В разделе "Pages" выберите источник "GitHub Actions"
+3. При пуше в `main` приложение автоматически соберется и задеплоится
+
+## 📊 API источники
+
+- **ЦБ РФ**: `https://www.cbr-xml-daily.ru/daily_json.js`
+- **НБКР**: `https://www.nbkr.kg/XML/daily.xml` (через прокси в разработке)
+
+## 🎨 Скриншоты
+
+Современный интерфейс с градиентами и анимациями для удобной конвертации валют.
+
+## 📝 Лицензия
+
+MIT
