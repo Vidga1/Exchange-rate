@@ -1,0 +1,13 @@
+{
+  "functions": {
+    "api/nbkr.js": {
+      "maxDuration": 10
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/nbkr",
+      "destination": "/api/nbkr.js"
+    }
+  ]
+}

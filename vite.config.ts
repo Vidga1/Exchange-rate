@@ -10,9 +10,8 @@ export default defineConfig({
   server: {
     proxy: {
       '/api/nbkr': {
-        target: 'https://www.nbkr.kg',
+        target: 'http://localhost:3001',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api\/nbkr/, '/XML/daily.xml'),
       },
     },
   },
