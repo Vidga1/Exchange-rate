@@ -43,22 +43,28 @@ function App() {
 
       const usdRubRate = cbrData.Valute?.USD?.Value || 0
 
-      if (usdRubRate > 0 && usdKgsRate > 0) {
+      // Если не удалось получить курсы, устанавливаем 0
+      if (usdRubRate === 0 || usdKgsRate === 0) {
+        setRates({
+          USD: 1,
+          KGS: 0,
+          RUB: 0,
+        })
+        setError('Не удалось получить курсы валют. Значения установлены в 0.')
+      } else {
         setRates({
           USD: 1,
           KGS: usdKgsRate,
           RUB: usdRubRate,
         })
-      } else {
-        throw new Error('Не удалось получить курсы валют')
       }
     } catch (err) {
       console.error('Ошибка при получении курсов валют:', err)
-      setError('Не удалось получить курсы валют. Используются базовые значения.')
+      setError('Не удалось получить курсы валют. Значения установлены в 0.')
       setRates({
         USD: 1,
-        KGS: 89.5,
-        RUB: 95.0,
+        KGS: 0,
+        RUB: 0,
       })
     } finally {
       setLoading(false)
