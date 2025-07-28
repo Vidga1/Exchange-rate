@@ -26,8 +26,10 @@ function App() {
       let usdKgsRate = 0
 
       try {
-        // В продакшене используем прямой URL к API киргизского банка
-        const nbkrUrl = import.meta.env.DEV ? '/api/nbkr' : 'https://www.nbkr.kg/XML/daily.xml'
+        // В продакшене используем CORS прокси для обхода ограничений
+        const nbkrUrl = import.meta.env.DEV
+          ? '/api/nbkr'
+          : 'https://api.allorigins.win/raw?url=https://www.nbkr.kg/XML/daily.xml'
 
         const nbkrResponse = await fetch(nbkrUrl)
         const nbkrText = await nbkrResponse.text()
@@ -38,6 +40,38 @@ function App() {
         usdKgsRate = usdElement ? parseFloat(usdElement.querySelector('Value')?.textContent || '0') : 0
       } catch (err) {
         console.log('KGS установлен в 0 (ошибка API)')
+
+        // Fallback: попробуем альтернативный прокси
+        if (!import.meta.env.DEV) {
+          try {
+            const fallbackUrl = 'https://cors-anywhere.herokuapp.com/https://www.nbkr.kg/XML/daily.xml'
+            const fallbackResponse = await fetch(fallbackUrl)
+            const fallbackText = await fallbackResponse.text()
+
+            const parser = new DOMParser()
+            const nbkrXml = parser.parseFromString(fallbackText, 'text/xml')
+            const usdElement = nbkrXml.querySelector('Currency[ISOCode="USD"]')
+            usdKgsRate = usdElement ? parseFloat(usdElement.querySelector('Value')?.textContent || '0') : 0
+          } catch (fallbackErr) {
+            console.log('Fallback прокси также не сработал')
+
+            // Третий fallback: попробуем другой CORS прокси
+            try {
+              const thirdFallbackUrl = 'https://thingproxy.freeboard.io/fetch/https://www.nbkr.kg/XML/daily.xml'
+              const thirdFallbackResponse = await fetch(thirdFallbackUrl)
+              const thirdFallbackText = await thirdFallbackResponse.text()
+
+              const parser = new DOMParser()
+              const nbkrXml = parser.parseFromString(thirdFallbackText, 'text/xml')
+              const usdElement = nbkrXml.querySelector('Currency[ISOCode="USD"]')
+              usdKgsRate = usdElement ? parseFloat(usdElement.querySelector('Value')?.textContent || '0') : 0
+            } catch (thirdFallbackErr) {
+              console.log('Все прокси не сработали, используем статический курс')
+              // Используем примерный статический курс KGS (можно обновлять вручную)
+              usdKgsRate = 89.5 // Примерный курс USD/KGS
+            }
+          }
+        }
       }
 
       const usdRubRate = cbrData.Valute?.USD?.Value || 0
